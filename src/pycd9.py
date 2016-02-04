@@ -50,51 +50,82 @@ def short_to_decimal(short_code):
 
 
 def barell_isrcode(x):
+    """Give the nature of an injury.
+    """
+    
     dx13 = int(x.dx13) if x.dx13 != ''  else 0
     dx14 = int(x.dx14) if x.dx14 != ''  else 0
     dx15 = int(x.dx15) if x.dx15 != ''  else 0
     D5   = int(x.D5) if x.dx15 != ''  else 0
 
+    # FRACTURES 
     if 800 <= dx13 <= 829:
         isrcode = 1
+
+    # DISLOCATION
     elif 830 <= dx13 <= 839:
         isrcode = 2
+
+    # SPRAINS&STRAINS
     elif 840 <= dx13 <= 848:
         isrcode = 3
+
+    # INTERNAL ORGAN
     elif (860 <= dx13 <= 869) or (850 <= dx13 <= 854) or \
          dx13 == 952 or dx15 == 99555:
         isrcode = 4
+
+    # OPEN WOUNDS
     elif (870 <= dx13 <= 884) or (890 <= dx13 <= 894):
         isrcode = 5
+
+    # AMPUTATIONS
     elif (885 <= dx13 <= 887) or (895 <= dx13 <= 897):
         isrcode = 6
+
+    # BLOOD VESSELS
     elif 900 <= dx13 <= 904:
         isrcode = 7
+
+    # SUPERFIC/CONT
     elif 910 <= dx13 <= 924:
         isrcode = 8
+
+    # CRUSHING
     elif 925 <= dx13 <= 929:
         isrcode = 9
+
+    # BURNS
     elif 940 <= dx13 <= 949:
         isrcode = 10
+
+    # NERVES
     elif (950 <= dx13 <= 951) or (953 <= dx13 <= 957):
         isrcode = 11
+
+    # UNSPECIFIED
     elif dx13 == 959:
         isrcode = 12
+
+    # SYSTEM WIDE & LATE EFFECTS
     elif (930 <= dx13 <= 939) or (960 <= dx13 <= 994) or (905 <= dx13 <= 908) or \
          (9090 <= dx14 <= 9092) or dx13 == 958 or (99550 <= dx15 <= 99554) or \
          dx15 == 99559 or dx14 == 9094 or dx14 == 9099 or (99580 <= dx15 <= 99585):
         isrcode = 13
+
+    # Not a classifiable injury
     else:
         isrcode = 0
 
     return isrcode
 
 def barell_isrsite(x):
-    dx13 = int(x.dx13) if x.dx13 != ''  else 0
-    dx14 = int(x.dx14) if x.dx14 != ''  else 0
-    dx15 = int(x.dx15) if x.dx15 != ''  else 0
-    D5   = int(x.D5) if x.dx15 != ''  else 0
+    dx13 = int(x.dx13) if x.dx13 != '' else 0
+    dx14 = int(x.dx14) if x.dx14 != '' else 0
+    dx15 = int(x.dx15) if x.dx15 != '' else 0
+    D5   = int(x.D5)   if x.dx15 != '' else 0
 
+    # TYPE 1 TBI
     if (8001  <= dx14 <= 8004)  or (8006  <= dx14 <= 8009)  or \
        (80003 <= dx15 <= 80005) or (80053 <= dx15 <= 80055) or \
        (8011  <= dx14 <= 8014)  or (8016  <= dx14 <= 8019)  or \
@@ -107,162 +138,207 @@ def barell_isrsite(x):
        (9501  <= dx14 <= 9503)  or dx15 == 99555:
         isrsite = 1
 
-    elif dx15==80000 or dx15==80002 or dx15==80006 or dx15==80009 or \
-       dx15==80100 or dx15==80102 or dx15==80106 or dx15==80109 or \
-       dx15==80300 or dx15==80302 or dx15==80306 or dx15==80309 or \
-       dx15==80400 or dx15==80402 or dx15==80406 or dx15==80409 or \
-       dx15==80050 or dx15==80052 or dx15==80056 or dx15==80059 or \
-       dx15==80150 or dx15==80152 or dx15==80156 or dx15==80159 or \
-       dx15==80350 or dx15==80352 or dx15==80356 or dx15==80359 or \
-       dx15==80450 or dx15==80452 or dx15==80456 or dx15==80459 or \
-       dx14==8500 or dx14==8501 or dx14==8505 or dx14==8509:
-        isrsite=2
+    # TYPE 2 TBI
+    elif dx15 in [80000, 80002, 80006, 80009, 80100, 80102, 80106, 80109,
+                  80300, 80302, 80306, 80309, 80400, 80402, 80406, 80409,
+                  80050, 80052, 80056, 80059, 80150, 80152, 80156, 80159,
+                  80350, 80352, 80356, 80359, 80450, 80452, 80456, 80459] or \
+         dx14 in [8500, 8501, 8505, 8509]:
+        isrsite = 2
 
-    elif dx15==80001 or dx15==80051 or \
-       dx15==80101 or dx15==80151 or \
-       dx15==80301 or dx15==80351 or \
-       dx15==80401 or dx15==80451:
-        isrsite=3
+    # TYPE 3 TBI
+    elif dx15 in [80001, 80051, 80101, 80151, 80301, 80351, 80401, 80451]:
+        isrsite = 3
 
-    elif (dx13 == 951) or (dx14 == 8730 or dx14 == 8731 or dx14 == 8738 or dx14 == 8739) \
-       or (dx13 == 941 and D5 == 6) or dx15 == 95901:
-        isrsite=4
+    # OTHER HEAD
+    elif dx13 == 951 or dx14 in [8730, 8731, 8738, 8739] or \
+         (dx13 == 941 and D5 == 6) or dx15 == 95901:
+        isrsite = 4
 
-    elif dx13==802 or dx13==830 or dx14==8480 or dx14==8481 or \
-       dx13==872 or (8732<=dx14<=8737) or \
-       (dx13==941 and D5==1) or (dx13==941 and 3<=D5<=5) or \
-       (dx13==941 and D5==7):
-        isrsite=5
+    # FACE
+    elif dx13 in [802, 830, 872] or dx14 in [8480, 8481] or \
+         (8732 <= dx14 <= 8737) or (dx13 == 941 and D5 == 1) or \
+         (dx13 == 941 and 3 <= D5 <= 5) or (dx13 == 941 and D5 == 7):
+        isrsite = 5
 
-    elif dx14==9500 or dx14==9509 or (870<=dx13<=871) or \
-       dx13==921 or dx13==918 or dx13==940 or (dx13==941 and D5==2):
-        isrsite=6
+    # EYE
+    elif dx14 in [9500, 9509] or (870 <= dx13 <= 871) or \
+         dx13 in [921, 918, 940] or (dx13 == 941 and D5 == 2):
+        isrsite = 6
 
-    elif (8075<=dx14<=8076) or dx14==8482 or dx14==9252 or \
-       dx14==9530 or dx14==9540 or dx13==874 or \
-       (dx13==941 and D5==8):
-        isrsite=7
+    # NECK
+    elif (8075 <= dx14 <= 8076) or dx14 == 8482 or dx14 == 9252 or \
+         dx14 == 9530 or dx14 == 9540 or dx13 == 874 or \
+         (dx13 == 941 and D5 == 8):
+        isrsite = 7
 
-    elif dx14==9251 or dx13==900 or dx14==9570 or dx13==910 or \
-       dx13==920 or dx14==9470 or dx15==95909 or \
-       (dx13==941 and (D5==0 or D5==9)):
-        isrsite=8
-        
-    elif (8060<=dx14<=8061) or (dx14==9520):
-        isrsite=9
-    
-    elif (8062<=dx14<=8063) or (dx14==9521):
-        isrsite=10
-        
-    elif (8064<=dx14<=8065) or (dx14==9522):
-        isrsite=11
-        
-    elif (8066<=dx14<=8067) or (9523<=dx14<=9524):
-        isrsite=12
-        
-    elif (8068<=dx14<=8069) or (9528<=dx14<=9529):
-        isrsite=13
+    # HEAD,FACE,NECK UNSPEC
+    elif dx14 == 9251 or dx13 == 900 or dx14 == 9570 or dx13 == 910 or \
+       dx13 == 920 or dx14 == 9470 or dx15 == 95909 or \
+       (dx13 == 941 and (D5 == 0 or D5 == 9)):
+        isrsite = 8
 
-    elif (8050<=dx14<=8051) or (8390<=dx14<=8391) or dx14==8470:
-        isrsite=14
-        
-    elif (8052<=dx14<=8053) or (83921==dx15 or 83931==dx15) or dx14==8471:
-        isrsite=15
-        
-    elif (8054<=dx14<=8055) or (83920==dx15 or 83930==dx15) or dx14==8472:
-        isrsite=16
-        
-    elif (8056<=dx14<=8057) or (83941== dx15 or 83942== dx15)or (83951<=dx15<=83952) or (8473<=dx14<=8474):
-        isrsite=17
-        
-    elif (8058<=dx14<=8059) or (83940 == dx15 or 83949 == dx15) or (83950==dx15 or dx15==83959):
-        isrsite=18
-        
-    elif (8070<=dx14<=8074) or dx15==83961 or dx15==83971 or (8483<=dx14<=8484) or \
-       dx15==92619 or (860<=dx13<=862) or dx13==901 or dx14==9531 or dx13==875 or \
-       dx14==8790 or dx14==8791 or dx14==9220 or dx14==9221 or dx15==92233 or \
-       (dx13==942 and (D5==1 or D5==2)):
-        isrsite=19
+    # CERVICAL SCI
+    elif (8060 <= dx14 <= 8061) or dx14 == 9520:
+        isrsite = 9
 
-    elif (863<=dx13<=866) or dx13==868 or (9020<=dx14<=9024) or \
-       dx14==9532 or dx14==9535 or (8792<=dx14<=8795) or \
-       dx14==9222 or (dx13==942 and D5==3) or dx14==9473:
+    # THORACIC/DORSAL SCI
+    elif (8062 <= dx14 <= 8063) or dx14 == 9521:
+        isrsite = 10
+
+    # LUMBAR SCI
+    elif (8064 <= dx14 <= 8065) or (dx14 == 9522):
+        isrsite = 11
+
+    # SACRUM COCCYX SCI
+    elif (8066 <= dx14 <= 8067) or (9523 <= dx14 <= 9524):
+        isrsite = 12
+
+    # SPINE+BACK UNSPEC SCI
+    elif (8068 <= dx14 <= 8069) or (9528 <= dx14 <= 9529):
+        isrsite = 13
+
+    # CERVICAL VCI
+    elif (8050 <= dx14 <= 8051) or (8390 <= dx14 <= 8391) or dx14 == 8470:
+        isrsite = 14
+
+    # THORACIC/DORSAL VCI
+    elif (8052 <= dx14 <= 8053) or (83921 == dx15 or 83931 == dx15) or dx14 == 8471:
+        isrsite = 15
+
+    # LUMBAR VCI
+    elif (8054 <= dx14 <= 8055) or (83920 == dx15 or 83930 == dx15) or dx14 == 8472:
+        isrsite = 16
+
+    # SACRUM COCCYX VCI
+    elif (8056 <= dx14 <= 8057) or (83941 == dx15 or 83942 == dx15) or \
+         (83951 <= dx15 <= 83952) or (8473 <= dx14 <= 8474):
+        isrsite = 17
+        
+    # SPINE,BACK UNSPEC VCI
+    elif (8058 <= dx14 <= 8059) or (83940 == dx15 or 83949 == dx15) or \
+         (83950 == dx15 or dx15 == 83959):
+        isrsite = 18
+
+    # CHEST
+    elif (8070 <= dx14 <= 8074) or dx15 == 83961 or dx15 == 83971 or (8483 <= dx14 <= 8484) or \
+         dx15 == 92619 or (860 <= dx13 <= 862) or dx13 == 901 or dx14 == 9531 or dx13 == 875 or \
+         dx14 == 8790 or dx14 == 8791 or dx14 == 9220 or dx14 == 9221 or dx15 == 92233 or \
+         (dx13 == 942 and (D5 == 1 or D5 == 2)):
+        isrsite = 19
+
+    # ABDOMEN
+    elif (863 <= dx13 <= 866) or dx13 == 868 or (9020 <= dx14 <= 9024) or \
+         dx14 == 9532 or dx14 == 9535 or (8792 <= dx14 <= 8795) or \
+         dx14==9222 or (dx13==942 and D5==3) or dx14==9473:
         isrsite=20
 
-    elif dx13==808 or dx15==83969 or dx15==83979 or dx13==846 or \
-       dx14==8485 or dx14==9260 or dx15==92612 or dx13==867 or \
-       dx14==9025 or (90281<=dx15<=90282) or dx14==9533 or \
-       (877 <=dx13<=878) or dx14==9224 or (dx13==942 and D5==5) \
-       or dx14==9474:
-        isrsite=21
+    # PELVIS+UROGENITAL
+    elif dx13 == 808 or dx15 == 83969 or dx15 == 83979 or dx13 == 846 or \
+         dx14 == 8485 or dx14 == 9260 or dx15 == 92612 or dx13 == 867 or \
+         dx14 == 9025 or (90281 <= dx15 <= 90282) or dx14 == 9533 or \
+         (877 <= dx13 <= 878) or dx14 == 9224 or (dx13 == 942 and D5 == 5) or \
+         dx14 == 9474:
+        isrsite = 21
 
-    elif dx13==809 or (9268<=dx14<=9269) or dx14==9541 or \
-       (9548<=dx14<=9549) or (8796<=dx14<=8797) or \
-       (9228<=dx14<=9229) or dx13==911 or (dx13==942 and D5==0) or \
-       (dx13==942 and D5==9) or dx14==9591:
-        isrsite=22
+    # TRUNK
+    elif dx13 == 809 or (9268 <= dx14 <= 9269) or dx14 == 9541 or \
+         (9548 <= dx14 <= 9549) or (8796 <= dx14 <= 8797) or \
+         (9228 <= dx14<=9229) or dx13 == 911 or (dx13 == 942 and D5 == 0) or \
+         (dx13 == 942 and D5 == 9) or dx14 == 9591:
+        isrsite = 22
 
-    elif dx14==8479 or dx15==92611 or dx13==876 or dx15==92232 or \
-       dx15==92231 or (dx13==942 and D5==4):
-        isrsite=23
+    # BACK+BUTTOCK
+    elif dx14 == 8479 or dx15 == 92611 or dx13 == 876 or dx15 == 92232 or \
+         dx15 == 92231 or (dx13 == 942 and D5 == 4):
+        isrsite = 23
 
-    elif (810<=dx13<=812) or dx13==831 or dx13==840 or dx13==880 or \
-       8872<=dx14<=8873 or (dx13==943 and 3<=D5<=6) or dx13==912 or \
-       dx14==9230 or dx14==9270 or dx14==9592:
-        isrsite=24
+    # SHOULDER&UPPER ARM
+    elif (810 <= dx13 <= 812) or dx13 == 831 or dx13 == 840 or dx13 == 880 or \
+       8872 <= dx14 <= 8873 or (dx13 == 943 and 3 <= D5 <= 6) or dx13 == 912 or \
+       dx14 == 9230 or dx14 == 9270 or dx14 == 9592:
+        isrsite = 24
 
-    elif dx13==813 or dx13==832 or dx13==841 or (dx13==881 and 0<=D5<=1) or \
-       (8870<=dx14<=8871) or dx14==9231 or dx14==9271 or (dx13==943 and 1<=D5<=2):
-        isrsite=25
+    # FOREARM&ELBOW
+    elif dx13 == 813 or dx13 == 832 or dx13 == 841 or \
+         (dx13 == 881 and 0 <= D5 <= 1) or (8870 <= dx14 <= 8871) or \
+         dx14 == 9231 or dx14 == 9271 or (dx13 == 943 and 1 <= D5 <= 2):
+        isrsite = 25
 
-    elif (814<=dx13<=817) or (833<=dx13<=834) or dx13==842 or (dx13==881 and D5==2) or \
-       882<=dx13<=883 or 885<=dx13<=886 or 914<=dx13<=915 or 9232<=dx14<=9233 or \
-       9272<=dx14<=9273 or dx13==944 or 9594<=dx14<=9595:
-        isrsite=26
+    # HAND&WRIST&FINGERS
+    elif (814 <= dx13 <= 817) or (833 <= dx13 <= 834) or dx13 == 842 or \
+         (dx13 == 881 and D5 == 2) or 882 <= dx13 <= 883 or \
+         885 <= dx13 <= 886 or 914 <= dx13 <= 915 or 9232 <= dx14 <= 9233 or \
+         9272 <= dx14 <= 9273 or dx13 == 944 or 9594 <= dx14 <= 9595:
+        isrsite = 26
 
-    elif dx13==818 or dx13==884 or 8874<=dx14<=8877 or dx13==903 or dx13==913 or dx14==9593 or \
-       9238<=dx14<=9239 or 9278<=dx14<=9279 or dx14==9534 or dx13==955 or \
-       (dx13==943 and (D5==0 or D5==9)):
-        isrsite=27
-        
-    elif dx13==820 or dx13==835 or dx13==843 or dx15==92401 or dx15==92801:
-        isrsite=28
+    # OTHER&UNSPEC UPPER EXTREM
+    elif dx13 == 818 or dx13 == 884 or 8874 <= dx14 <= 8877 or dx13 == 903 or \
+         dx13 == 913 or dx14 == 9593 or 9238 <= dx14 <= 9239 or \
+         9278 <= dx14 <= 9279 or dx14 == 9534 or dx13 == 955 or \
+         (dx13 == 943 and (D5 == 0 or D5 == 9)):
+        isrsite = 27
 
-    elif dx13==821 or 8972<=dx14<=8973 or dx15==92400 or dx15==92800 or (dx13==945 and D5==6):
-        isrsite=29
+    # HIP
+    elif dx13 == 820 or dx13 == 835 or dx13 == 843 or \
+         dx15 == 92401 or dx15 == 92801:
+        isrsite = 28
 
-    elif dx13==822 or dx13==836 or 8440<=dx14<=8443 or dx15==92411 or dx15==92811 or (dx13==945 and D5==5):
-        isrsite=30
+    # UPPER LEG&THIGH
+    elif dx13 == 821 or 8972 <= dx14 <= 8973 or dx15 == 92400 or \
+         dx15 == 92800 or (dx13 == 945 and D5 == 6):
+        isrsite = 29
 
-    elif 823<=dx13<=824 or 8970<=dx14<=8971 or dx13==837 or dx14==8450 or dx15==92410 \
-       or dx15==92421 or dx15==92810 or dx15==92821 or (dx13==945 and 3<=D5<=4):
-        isrsite=31
+    # KNEE
+    elif dx13 == 822 or dx13 == 836 or 8440 <= dx14 <= 8443 or \
+         dx15 == 92411 or dx15 == 92811 or (dx13 == 945 and D5 == 5):
+        isrsite = 30
 
-    elif 825<=dx13<=826 or dx13==838 or dx14==8451 or 892<=dx13<= 893 or 895<=dx13<=896 or \
-       dx13==917 or dx15==92420 or dx14== 9243 or dx15==92820 or dx14==9283 or (dx13==945 and 1<=D5<=2):
-        isrsite=32
+    # LOWER LEG&ANKLE
+    elif 823 <= dx13 <= 824 or 8970 <= dx14 <= 8971 or dx13 == 837 or \
+         dx14 == 8450 or dx15 == 92410 or dx15 == 92421 or dx15 == 92810 or \
+         dx15 == 92821 or (dx13 == 945 and 3 <= D5 <= 4):
+        isrsite = 31
 
-    elif dx13==827 or 8448<=dx14<=8449 or 890<=dx13<=891 or dx13==894 or 8974<=dx14<=8977 or \
-       9040<=dx14<=9048 or dx13==916 or 9244<=dx14<=9245 or dx14==9288 or dx14==9289 or \
-       9596<=dx14<=9597 or (dx13==945 and (D5==0 or D5==9)):
-        isrsite=33
+    # FOOT&TOES
+    elif 825 <= dx13 <= 826 or dx13 == 838 or dx14 == 8451 or \
+         892 <= dx13 <=  893 or 895 <= dx13 <= 896 or dx13 == 917 or \
+         dx15 == 92420 or dx14 ==  9243 or dx15 == 92820 or dx14 == 9283 or \
+         (dx13 == 945 and 1 <= D5 <= 2):
+        isrsite = 32
 
-    elif dx13==828 or dx13==819 or dx15==90287 or dx15==90289 or dx14==9538 or 9471<=dx14<=9472 or dx13==956:
-        isrsite=34
+    # OTHER&UNSPEC LOWER EXTREM
+    elif dx13 == 827 or 8448 <= dx14 <= 8449 or 890 <= dx13 <= 891 or \
+         dx13 == 894 or 8974 <= dx14 <= 8977 or 9040 <= dx14 <= 9048 or \
+         dx13 == 916 or 9244 <= dx14 <= 9245 or dx14 == 9288 or \
+         dx14 == 9289 or 9596 <= dx14 <= 9597 or \
+         (dx13 == 945 and (D5 == 0 or D5 == 9)):
+        isrsite = 33
 
-    elif dx13==829 or 8398<=dx14<=8399 or 8488<=dx14<=8489 or dx13==869 or (8798<=dx14<=8799) or \
-       dx14==9029 or dx14==9049 or dx13==919 or 9248<=dx14<=9249 or dx13==929 or dx13==946 or \
-       9478<=dx14<=9479 or 948<=dx13<=949 or dx14==9539 or dx14==9571 or 9578<=dx14<=9579 or \
-       9598<=dx14<=9599:
-        isrsite=35
+    # OTHER,MULTIPLE,NEC
+    elif dx13 == 828 or dx13 == 819 or dx15 == 90287 or dx15 == 90289 or \
+         dx14 == 9538 or 9471 <= dx14 <= 9472 or dx13 == 956:
+        isrsite = 34
 
-    elif (930<=dx13<=939) or (960<=dx13<=994) or (905<=dx13 <=908) or (9090<=dx14<=9092) or \
-       dx13==958 or (99550<=dx15 <=99554) or dx15==99559 or dx14==9094 or dx14==9099 or \
-       (99580<=dx15<=99585):
-        isrsite=36
+    # UNSPECIFIED
+    elif dx13 == 829 or 8398 <= dx14 <= 8399 or 8488 <= dx14 <= 8489 or \
+         dx13 == 869 or (8798 <= dx14 <= 8799) or dx14 == 9029 or \
+         dx14 == 9049 or dx13 == 919 or 9248 <= dx14 <= 9249 or dx13 == 929 or \
+         dx13 == 946 or 9478 <= dx14 <= 9479 or 948 <= dx13 <= 949 or \
+         dx14 == 9539 or dx14 == 9571 or 9578 <= dx14 <= 9579 or \
+         9598 <= dx14 <= 9599:
+        isrsite = 35
 
+    # SYSTEM WIDE & LATE EFFECTS
+    elif (930 <= dx13 <= 939) or (960 <= dx13 <= 994) or \
+         (905 <= dx13  <= 908) or (9090 <= dx14 <= 9092) or dx13 == 958 or \
+         (99550 <= dx15  <= 99554) or dx15 == 99559 or dx14 == 9094 or \
+         dx14 == 9099 or (99580 <= dx15 <= 99585):
+        isrsite = 36
+
+    # None of the above
     else:
-        isrsite=0
+        isrsite = 0
 
     return isrsite
 
@@ -273,16 +349,35 @@ def barell_isrsite2(x):
     D5   = int(x.D5) if x.dx15 != ''  else 0
     
     isrsite = barell_isrsite(x)
-    
+
+    # TBI
     if isrsite >= 1 and isrsite <= 3: isrsite2 = 1
+    
+    # OTH HEAD,FACE,NECK
     elif isrsite >= 4 and isrsite <= 8: isrsite2 = 2
+
+    # SCI
     elif isrsite >= 9 and isrsite <= 13: isrsite2 = 3
+
+    # VCI
     elif isrsite >= 14 and isrsite <= 18: isrsite2 = 4
+
+    # TORSO
     elif isrsite >= 19 and isrsite <= 23: isrsite2 = 5
+
+    # UPPER EXTREMITY
     elif isrsite >= 24 and isrsite <= 27: isrsite2 = 6
+
+    # LOWER EXTREMITY
     elif isrsite >= 28 and isrsite <= 33: isrsite2 = 7
+
+    # OTHER & UNSPECIFIED
     elif isrsite >= 34 and isrsite <= 35: isrsite2 = 8
+
+    # SYSTEM WIDE & LATE EFFECTS
     elif isrsite == 36: isrsite2 = 9
+
+    # Not a classifiable injury
     else: isrsite2 = 0
 
     return isrsite2
@@ -295,11 +390,22 @@ def barell_isrsite3(x):
     
     isrsite = barell_isrsite(x)
 
+    # HEAD&NECK
     if isrsite >= 1 and isrsite <= 8: isrsite3 = 1
+
+    # SPINE&BACK
     elif isrsite >= 9 and isrsite <= 18: isrsite3 = 2
+
+    # TORSO
     elif isrsite >= 19 and isrsite <= 23: isrsite3 = 3
+
+    # EXTREMITIES
     elif isrsite >= 24 and isrsite <= 33: isrsite3 = 4
+
+    # UNCLASSIFIABLE BY SITE
     elif isrsite >= 34 and isrsite <= 36: isrsite3 = 5
+
+    # Not a classifiable injury
     else: isrsite3 = 0
 
     return isrsite3
