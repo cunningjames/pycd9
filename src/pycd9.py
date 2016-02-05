@@ -49,81 +49,89 @@ def short_to_decimal(short_code):
         return ev_strip(short_code[:3]) + "." + short_code[3:]
 
 
-def barell_isrcode(x):
+def barell_isrcode(code):
     """Give the nature of an injury.
     """
-    
-    dx13 = int(x.dx13) if x.dx13 != ''  else 0
-    dx14 = int(x.dx14) if x.dx14 != ''  else 0
-    dx15 = int(x.dx15) if x.dx15 != ''  else 0
-    D5   = int(x.D5) if x.dx15 != ''  else 0
 
-    # FRACTURES 
+    str_code = str(code)
+    if   len(str_code) == 3: str_code += "00"
+    elif len(str_code) == 4: str_code += "0"
+
+    dx13 = int(str_code[0:3])
+    dx14 = int(str_code[0:4]) 
+    dx15 = int(str_code[0:5])
+    D5   = int(str_code[-1])
+    
+    # Fractures:
     if 800 <= dx13 <= 829:
         isrcode = 1
 
-    # DISLOCATION
+    # Dislocations:
     elif 830 <= dx13 <= 839:
         isrcode = 2
 
-    # SPRAINS&STRAINS
+    # Sprains / strains:
     elif 840 <= dx13 <= 848:
         isrcode = 3
 
-    # INTERNAL ORGAN
+    # Internal organ:
     elif (860 <= dx13 <= 869) or (850 <= dx13 <= 854) or \
          dx13 == 952 or dx15 == 99555:
         isrcode = 4
 
-    # OPEN WOUNDS
+    # Open wounds:
     elif (870 <= dx13 <= 884) or (890 <= dx13 <= 894):
         isrcode = 5
 
-    # AMPUTATIONS
+    # Amputations:
     elif (885 <= dx13 <= 887) or (895 <= dx13 <= 897):
         isrcode = 6
 
-    # BLOOD VESSELS
+    # Blood vessels:
     elif 900 <= dx13 <= 904:
         isrcode = 7
 
-    # SUPERFIC/CONT
+    # Superficial:
     elif 910 <= dx13 <= 924:
         isrcode = 8
 
-    # CRUSHING
+    # Crushing:
     elif 925 <= dx13 <= 929:
         isrcode = 9
 
-    # BURNS
+    # Burns:
     elif 940 <= dx13 <= 949:
         isrcode = 10
 
-    # NERVES
+    # Nerves:
     elif (950 <= dx13 <= 951) or (953 <= dx13 <= 957):
         isrcode = 11
 
-    # UNSPECIFIED
+    # Unspecified:
     elif dx13 == 959:
         isrcode = 12
 
-    # SYSTEM WIDE & LATE EFFECTS
+    # System-wide and late effects:
     elif (930 <= dx13 <= 939) or (960 <= dx13 <= 994) or (905 <= dx13 <= 908) or \
          (9090 <= dx14 <= 9092) or dx13 == 958 or (99550 <= dx15 <= 99554) or \
          dx15 == 99559 or dx14 == 9094 or dx14 == 9099 or (99580 <= dx15 <= 99585):
         isrcode = 13
 
-    # Not a classifiable injury
+    # Not a classifiable injury:
     else:
         isrcode = 0
 
     return isrcode
 
 def barell_isrsite(x):
-    dx13 = int(x.dx13) if x.dx13 != '' else 0
-    dx14 = int(x.dx14) if x.dx14 != '' else 0
-    dx15 = int(x.dx15) if x.dx15 != '' else 0
-    D5   = int(x.D5)   if x.dx15 != '' else 0
+    str_code = str(code)
+    if   len(str_code) == 3: str_code += "00"
+    elif len(str_code) == 4: str_code += "0"
+
+    dx13 = int(str_code[0:3])
+    dx14 = int(str_code[0:4]) 
+    dx15 = int(str_code[0:5])
+    D5   = int(str_code[-1])
 
     # TYPE 1 TBI
     if (8001  <= dx14 <= 8004)  or (8006  <= dx14 <= 8009)  or \
